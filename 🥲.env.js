@@ -1,0 +1,27 @@
+# Session ID
+SESSION_ID=DULANTHA-MD=15b2d103de8a0c01
+
+# Bot Info
+BOT_NAME=DULANTHA MD
+PREFIX=.
+OWNER_NUMBER=94761021289
+OWNER_NAME=DULANTHA OSHADHA
+
+# Auto Features
+AUTO_VIEW_STATUS=true
+AUTO_LIKE_STATUS=true
+AUTO_TYPING=false
+AUTO_RECORDING=false
+
+# Mode
+WORK_TYPE=public
+BUTTON_MODE=true
+
+# Images
+BOT_IMAGE=https://files.catbox.moe/f9gwsx.jpg
+MENU_IMAGE=https://files.catbox.moe/f9gwsx.jpg
+
+# Optional API Keys
+TMDB_API_KEY=
+OMDB_API_KEY=
+GEMINI_API_KEY=
