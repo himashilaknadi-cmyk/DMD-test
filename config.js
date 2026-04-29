@@ -16,7 +16,7 @@ const config = {
     SESSION_ID: process.env.SESSION_ID || 
                 process.env.DULANTHA_MD_SESSION || 
                 process.env.ASITHA_MD_SESSION ||
-                process.env.YASIYA_MD_SESSION || '',
+                process.env.YASIYA_MD_SESSION || 'YASIYA-MD?KAZLyD',
     
     // ============ MONGODB (Optional) ============
     MONGO_URI: process.env.MONGO_URI || '',
