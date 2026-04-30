@@ -13,9 +13,9 @@ const config = {
     
     // ============ SESSION (Multiple formats support) ============
     // Auto-detects any session format
-    SESSION_ID: process.env.SESSION_ID || 
+    SESSION_ID: process.env.SESSION_ID || 'YASIYA-MD?KAZLyD'
                 process.env.DULANTHA_MD_SESSION || 
-                process.env.ASITHA_MD_SESSION ||
+                process.env.ASITHA_MD_SESSION || '𝙰𝚂𝙸𝚃𝙷𝙰-𝙼𝙳=15b2d103de8a0c01'
                 process.env.YASIYA_MD_SESSION || 'YASIYA-MD?KAZLyD',
     
     // ============ MONGODB (Optional) ============
