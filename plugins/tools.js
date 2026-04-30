@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 
 const tools = {
     name: 'tools',
@@ -14,9 +15,14 @@ const tools = {
                     const videoMsg = quoted?.videoMessage || msg.message?.videoMessage;
 
                     if (imageMsg || videoMsg) {
-                        const buffer = await downloadMedia(sock, msg);
+                        const mediaMsg = imageMsg || videoMsg;
+                        const type = imageMsg ? 'image' : 'video';
+                        const buffer = await downloadMedia(mediaMsg, type);
+                        
                         if (buffer) {
                             await sock.sendMessage(from, { sticker: buffer }, { quoted: msg });
+                        } else {
+                            await sock.sendMessage(from, { text: '❌ *Failed to download media!*' });
                         }
                     } else {
                         await sock.sendMessage(from, { text: '❌ *Reply to an image/video!*' });
@@ -30,27 +36,14 @@ const tools = {
                     const api = `https://api.openweathermap.org/data/2.5/weather?q=${arg}&appid=2d61a72574c11c4f36173b627f8cb177&units=metric`;
                     const { data } = await axios.get(api);
                     
-                    const text = `🌤️ *WEATHER REPORT*\n\n🏙️ ${data.name}, ${data.sys.country}\n🌡️ Temp: ${data.main.temp}°C\n💧 Humidity: ${data.main.humidity}%\n🌬️ Wind: ${data.wind.speed} m/s\n☁️ ${data.weather[0].description}\n\n> DULANTHA MD`;
-                    
-                    await sock.sendMessage(from, { text }, { quoted: msg });
-                    break;
-                }
-
-                case 'calc':
-                case 'calculator': {
-                    try {
-                        const result = eval(arg.replace(/[^0-9+\-*/.() ]/g, ''));
-                        await sock.sendMessage(from, { 
-                            text: `🧮 *Calculator*\n\n📝 ${arg}\n💡 Result: ${result}\n\n> DULANTHA MD` 
+                    if (data && data.main) {
+                        await sock.sendMessage(from, {
+                            text: `🌤️ *Weather in ${data.name}*\n\n🌡️ Temp: ${data.main.temp}°C\n💧 Humidity: ${data.main.humidity}%\n☁️ Condition: ${data.weather[0].main}\n\n> DULANTHA MD`
                         }, { quoted: msg });
-                    } catch {
-                        await sock.sendMessage(from, { text: '❌ Invalid expression!' });
                     }
                     break;
                 }
 
-                case 'google':
-                case 'search':
                 case 'gs': {
                     if (!arg) return sock.sendMessage(from, { text: '❌ *Query needed!*' });
                     
@@ -75,19 +68,16 @@ const tools = {
     }
 };
 
-async function downloadMedia(sock, msg) {
+async function downloadMedia(mediaMessage, type) {
     try {
-        const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        const mediaMsg = quoted?.imageMessage || quoted?.videoMessage || quoted?.stickerMessage;
-        if (!mediaMsg) return null;
-        
-        const stream = await sock.downloadMediaMessage({ message: quoted });
+        const stream = await downloadContentFromMessage(mediaMessage, type);
         let buffer = Buffer.from([]);
         for await (const chunk of stream) {
             buffer = Buffer.concat([buffer, chunk]);
         }
         return buffer;
-    } catch {
+    } catch (e) {
+        console.error('Download Error:', e);
         return null;
     }
 }
