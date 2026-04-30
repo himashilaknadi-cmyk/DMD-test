@@ -1,4 +1,6 @@
 const axios = require('axios');
+const FormData = require('form-data');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 
 const converter = {
     name: 'converter',
@@ -30,11 +32,9 @@ const converter = {
                     
                     if (!imageMsg) return sock.sendMessage(from, { text: '❌ *Reply to an image!*' });
                     
-                    const media = await downloadMedia(sock, msg);
+                    const media = await downloadMedia(imageMsg, 'image');
                     if (!media) return sock.sendMessage(from, { text: '❌ *Failed to download media!*' });
                     
-                    // Upload to telegraph
-                    const FormData = require('form-data');
                     const form = new FormData();
                     form.append('file', media, { filename: 'image.jpg' });
                     
@@ -66,21 +66,16 @@ const converter = {
     }
 };
 
-async function downloadMedia(sock, msg) {
+async function downloadMedia(mediaMessage, type) {
     try {
-        const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        const mediaMsg = quoted?.imageMessage || msg.message?.imageMessage;
-        if (!mediaMsg) return null;
-        
-        const stream = await sock.downloadMediaMessage({ 
-            message: quoted || msg.message 
-        });
+        const stream = await downloadContentFromMessage(mediaMessage, type);
         let buffer = Buffer.from([]);
         for await (const chunk of stream) {
             buffer = Buffer.concat([buffer, chunk]);
         }
         return buffer;
-    } catch {
+    } catch (e) {
+        console.error('Media download error:', e);
         return null;
     }
 }
